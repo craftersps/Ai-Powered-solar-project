@@ -2,7 +2,7 @@
 
 > A full-stack IoT environmental monitoring system — from bare Arduino sensors to a real-time AI-powered web dashboard. Built entirely from scratch without any IoT frameworks or cloud platforms.
 
-![Dashboard Preview](docs/images/dashboard-preview.png)
+![Dashboard Preview](docs/images/Webpage.png)
 
 ---
 
