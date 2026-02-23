@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environmental Monitor Pro - 5 Sensors</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Sophisticated Dark Theme */
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-card-hover: rgba(17, 24, 39, 0.9);
+            
+            /* Accent Colors - Vibrant but refined */
+            --accent-temp: #ef4444;
+            --accent-humidity: #3b82f6;
+            --accent-dust: #f59e0b;
+            --accent-pressure: #a78bfa;
+            --accent-solar: #10b981;
+            --accent-weather: #8b5cf6;
+            
+            /* Gradients */
+            --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-temp: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-hum: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-dust: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --gradient-pressure: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+            --gradient-solar: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            
+            /* Text Colors */
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            
+            /* Borders & Effects */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --glow: 0 0 30px rgba(102, 126, 234, 0.3);
+            
+            /* Typography */
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+        
+        /* Header */
+        .header {
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-hero);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .title-group h1 {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .title-group p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .status-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse-dot 2s infinite;
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+        
+        .status-dot.disconnected {
+            background: #ef4444;
+        }
+        
+        /* Main Grid Layout - Updated for 5 cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Sensor Cards */
+        .sensor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sensor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .sensor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .sensor-card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+        }
+        
+        .card-icon::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 12px;
+            padding: 2px;
+            background: inherit;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .card-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .card-value {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        
+        .card-unit {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 100px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Temperature Card */
+        .temp-card {
+            grid-column: span 3;
+        }
+        
+        .temp-card .card-icon {
+            background: var(--gradient-temp);
+        }
+        
+        .temp-card .card-value {
+            color: var(--accent-temp);
+        }
+        
+        .temp-card .progress-fill {
+            background: var(--gradient-temp);
+        }
+        
+        /* Humidity Card */
+        .hum-card {
+            grid-column: span 3;
+        }
+        
+        .hum-card .card-icon {
+            background: var(--gradient-hum);
+        }
+        
+        .hum-card .card-value {
+            color: var(--accent-humidity);
+        }
+        
+        .hum-card .progress-fill {
+            background: var(--gradient-hum);
+        }
+        
+        /* Dust Card */
+        .dust-card {
+            grid-column: span 3;
+        }
+        
+        .dust-card .card-icon {
+            background: var(--gradient-dust);
+        }
+        
+        .dust-card .card-value {
+            color: var(--accent-dust);
+        }
+        
+        .dust-card .progress-fill {
+            background: var(--gradient-dust);
+        }
+        
+        /* Air Pressure Card - NEW! */
+        .pressure-card {
+            grid-column: span 3;
+        }
+        
+        .pressure-card .card-icon {
+            background: var(--gradient-pressure);
+        }
+        
+        .pressure-card .card-value {
+            color: var(--accent-pressure);
+        }
+        
+        .pressure-card .progress-fill {
+            background: var(--gradient-pressure);
+        }
+        
+        /* Solar Card */
+        .solar-card {
+            grid-column: span 3;
+        }
+        
+        .solar-card .card-icon {
+            background: var(--gradient-solar);
+        }
+        
+        .solar-card .card-value {
+            color: var(--accent-solar);
+        }
+        
+        .solar-card .progress-fill {
+            background: var(--gradient-solar);
+        }
+        
+        /* Weather Widget */
+        .weather-widget {
+            grid-column: span 5;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .weather-widget::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            animation: weather-glow 8s ease-in-out infinite;
+        }
+        
+        @keyframes weather-glow {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-10%, -10%) scale(1.1); }
+        }
+        
+        .weather-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .weather-icon-large {
+            font-size: 3rem;
+        }
+        
+        .weather-temp-main {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+        }
+        
+        .weather-description {
+            color: var(--text-secondary);
+            text-transform: capitalize;
+            font-size: 1.1rem;
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .weather-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+        
+        .weather-detail-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            color: #a78bfa;
+        }
+        
+        /* Air Quality Analysis */
+        .air-quality-panel {
+            grid-column: span 10;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.4px;
+        }
+        
+        .aqi-display {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .aqi-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .aqi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+        }
+        
+        .aqi-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .aqi-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .aqi-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        /* Solar Tracker Visualization */
+        .solar-tracker-panel {
+            grid-column: span 15;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .tracker-3d-view {
+            position: relative;
+            height: 300px;
+            background: linear-gradient(180deg, rgba(10, 14, 26, 0.8) 0%, rgba(17, 24, 39, 0.8) 100%);
+            border-radius: 16px;
+            margin: 2rem 0;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .sky-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                #1e3a8a 0%, 
+                #3b82f6 30%, 
+                #fbbf24 70%, 
+                #f59e0b 100%);
+            opacity: 0.3;
+        }
+        
+        .sun {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fef3c7 0%, #fbbf24 100%);
+            box-shadow: 0 0 60px #fbbf24, 0 0 120px #f59e0b;
+            animation: sun-glow 3s ease-in-out infinite;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes sun-glow {
+            0%, 100% { box-shadow: 0 0 60px #fbbf24, 0 0 120px #f59e0b; }
+            50% { box-shadow: 0 0 80px #fbbf24, 0 0 160px #f59e0b; }
+        }
+        
+        .solar-panel {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100px;
+            perspective: 1000px;
+        }
+        
+        .panel-surface {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 3px solid #64748b;
+            border-radius: 8px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .panel-surface::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            background: repeating-linear-gradient(
+                0deg,
+                #475569 0px,
+                #475569 2px,
+                transparent 2px,
+                transparent 22px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                #475569 0px,
+                #475569 2px,
+                transparent 2px,
+                transparent 22px
+            );
+            border-radius: 4px;
+        }
+        
+        .panel-stand {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 60px;
+            background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+        }
+        
+        .ldr-sensors {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 2rem;
+        }
+        
+        .ldr-sensor {
+            flex: 1;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .ldr-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ldr-bulb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fbbf24;
+            box-shadow: 0 0 20px #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .ldr-value-display {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+            color: #fbbf24;
+        }
+        
+        .tracker-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: var(--font-display);
+        }
+        
+        /* Export Panel */
+        .export-panel {
+            grid-column: span 15;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-hero);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .footer-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-hero);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .footer-text strong {
+            color: var(--text-primary);
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-link:hover {
+            color: var(--text-primary);
+        }
+        
+        .footer-stats {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0 1.5rem;
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .footer-stat {
+            text-align: center;
+        }
+        
+        .footer-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .footer-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .temp-card, .hum-card, .dust-card, .pressure-card, .solar-card {
+                grid-column: span 5;
+            }
+            
+            .weather-widget {
+                grid-column: span 7;
+            }
+            
+            .air-quality-panel {
+                grid-column: span 8;
+            }
+            
+            .solar-tracker-panel, .export-panel {
+                grid-column: span 15;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(12, 1fr);
+            }
+            
+            .temp-card, .hum-card, .dust-card, .pressure-card, .solar-card {
+                grid-column: span 6;
+            }
+            
+            .weather-widget, .air-quality-panel {
+                grid-column: span 12;
+            }
+            
+            .solar-tracker-panel, .export-panel {
+                grid-column: span 12;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+            
+            .temp-card, .hum-card, .dust-card, .pressure-card, .solar-card,
+            .weather-widget, .air-quality-panel, .solar-tracker-panel, .export-panel {
+                grid-column: span 1;
+            }
+            
+            .title-group h1 {
+                font-size: 2rem;
+            }
+            
+            .card-value {
+                font-size: 2.5rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-stats {
+                border-left: none;
+                border-right: none;
+                border-top: 1px solid var(--border-color);
+                border-bottom: 1px solid var(--border-color);
+                padding: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-satellite-dish"></i>
+                    </div>
+                    <div class="title-group">
+                        <h1>Environmental Monitor Pro</h1>
+                        <p>5 Sensors • Real-time IoT Dashboard • Advanced Analytics</p>
+                    </div>
+                </div>
+                
+                <div class="status-pill">
+                    <span class="status-dot" id="statusDot"></span>
+                    <div>
+                        <div style="font-weight: 600;" id="statusText">Connected</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);" id="lastUpdate">Live</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Temperature Card -->
+            <div class="sensor-card temp-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-temperature-high"></i>
+                    </div>
+                    <span class="card-label"><i class="fas fa-thermometer-half"></i> Temperature</span>
+                </div>
+                <div class="card-value" id="tempValue">
+                    --<span class="card-unit">°C</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="tempBar" style="width: 0%"></div>
+                </div>
+                <span class="status-badge" id="tempStatus">Loading...</span>
+            </div>
+            
+            <!-- Humidity Card -->
+            <div class="sensor-card hum-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-droplet"></i>
+                    </div>
+                    <span class="card-label"><i class="fas fa-tint"></i> Humidity</span>
+                </div>
+                <div class="card-value" id="humValue">
+                    --<span class="card-unit">%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="humBar" style="width: 0%"></div>
+                </div>
+                <span class="status-badge" id="humStatus">Loading...</span>
+            </div>
+            
+            <!-- Dust Card -->
+            <div class="sensor-card dust-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-smog"></i>
+                    </div>
+                    <span class="card-label"><i class="fas fa-wind"></i> Air Quality</span>
+                </div>
+                <div class="card-value" id="dustValue">
+                    --<span class="card-unit">µg/m³</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="dustBar" style="width: 0%"></div>
+                </div>
+                <span class="status-badge" id="dustStatus">Loading...</span>
+            </div>
+            
+            <!-- Air Pressure Card - NEW! -->
+            <div class="sensor-card pressure-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-gauge-high"></i>
+                    </div>
+                    <span class="card-label"><i class="fas fa-compress-arrows-alt"></i> Air Pressure</span>
+                </div>
+                <div class="card-value" id="pressureValue">
+                    --<span class="card-unit">kPa</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="pressureBar" style="width: 0%"></div>
+                </div>
+                <span class="status-badge" id="pressureStatus">Loading...</span>
+            </div>
+            
+            <!-- Solar Angle Card -->
+            <div class="sensor-card solar-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <span class="card-label"><i class="fas fa-sun"></i> Panel Angle</span>
+                </div>
+                <div class="card-value" id="angleValue">
+                    --<span class="card-unit">°</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="angleBar" style="width: 50%"></div>
+                </div>
+                <span class="status-badge" id="trackerStatus">Loading...</span>
+            </div>
+            
+            <!-- Weather Widget -->
+            <div class="weather-widget">
+                <div class="weather-header">
+                    <div id="weatherIcon" class="weather-icon-large">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                    <div>
+                        <div class="weather-temp-main" id="weatherTemp">--°C</div>
+                        <div class="weather-description" id="weatherDesc">Loading weather...</div>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Wind</div>
+                            <div style="font-weight: 600;" id="weatherWind">-- km/h</div>
+                        </div>
+                    </div>
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-icon">
+                            <i class="fas fa-droplet"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Humidity</div>
+                            <div style="font-weight: 600;" id="weatherHumidity">--%</div>
+                        </div>
+                    </div>
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-icon">
+                            <i class="fas fa-gauge-high"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Pressure</div>
+                            <div style="font-weight: 600;" id="weatherPressure">-- hPa</div>
+                        </div>
+                    </div>
+                    <div class="weather-detail-item">
+                        <div class="weather-detail-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Visibility</div>
+                            <div style="font-weight: 600;" id="weatherVisibility">-- km</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Air Quality Analysis -->
+            <div class="air-quality-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-lungs"></i> Air Quality Analysis
+                    </h2>
+                </div>
+                <div class="aqi-display" id="aqiDisplay">
+                    <div class="aqi-circle" style="border: 4px solid #10b981;">
+                        <div class="aqi-value" style="color: #10b981;">0</div>
+                        <div class="aqi-label">AQI</div>
+                    </div>
+                    <div class="aqi-info">
+                        <h3 style="color: #10b981;"><i class="fas fa-check-circle"></i> Good Air Quality</h3>
+                        <p class="aqi-description">Air quality is satisfactory and poses little or no health risk. Outdoor activities are safe for everyone.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Solar Tracker Visualization -->
+            <div class="solar-tracker-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-sun"></i> Solar Tracker System
+                    </h2>
+                </div>
+                
+                <!-- 3D Tracker View -->
+                <div class="tracker-3d-view">
+                    <div class="sky-gradient"></div>
+                    <div class="sun" id="sunPosition"></div>
+                    <div class="solar-panel">
+                        <div class="panel-surface" id="panelSurface"></div>
+                        <div class="panel-stand"></div>
+                    </div>
+                </div>
+                
+                <!-- LDR Sensors -->
+                <div class="ldr-sensors">
+                    <div class="ldr-sensor">
+                        <div class="ldr-header">
+                            <div class="ldr-bulb">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);"><i class="fas fa-arrow-left"></i> LEFT SENSOR</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">LDR-A0</div>
+                            </div>
+                        </div>
+                        <div class="ldr-value-display" id="ldrLeft">0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="ldrLeftBar" style="background: linear-gradient(90deg, #fbbf24, #f59e0b); width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="ldr-sensor">
+                        <div class="ldr-header">
+                            <div class="ldr-bulb">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">RIGHT SENSOR <i class="fas fa-arrow-right"></i></div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">LDR-A1</div>
+                            </div>
+                        </div>
+                        <div class="ldr-value-display" id="ldrRight">0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="ldrRightBar" style="background: linear-gradient(90deg, #fbbf24, #f59e0b); width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tracker Stats -->
+                <div class="tracker-stats">
+                    <div class="stat-item">
+                        <div class="stat-label"><i class="fas fa-arrows-left-right"></i> Light Difference</div>
+                        <div class="stat-value" id="lightDiff">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label"><i class="fas fa-bullseye"></i> Tracker Action</div>
+                        <div class="stat-value" style="font-size: 1.25rem;" id="trackerAction">CENTER</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label"><i class="fas fa-info-circle"></i> System Status</div>
+                        <div class="stat-value" style="font-size: 1.25rem;" id="trackerSystemStatus">IDLE</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label"><i class="fas fa-bolt"></i> Efficiency</div>
+                        <div class="stat-value" id="trackerEfficiency">--%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Export Panel -->
+            <div class="export-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-download"></i> Data Export & Actions
+                    </h2>
+                </div>
+                <div class="export-buttons">
+                    <a href="/api/export/csv/1" class="btn btn-primary">
+                        <i class="fas fa-file-csv"></i>
+                        <span>Export 24 Hours</span>
+                    </a>
+                    <a href="/api/export/csv/7" class="btn btn-primary">
+                        <i class="fas fa-file-csv"></i>
+                        <span>Export 7 Days</span>
+                    </a>
+                    <a href="/api/export/csv/30" class="btn btn-primary">
+                        <i class="fas fa-file-csv"></i>
+                        <span>Export 30 Days</span>
+                    </a>
+                    <a href="/api/history" class="btn btn-outline">
+                        <i class="fas fa-chart-line"></i>
+                        <span>View History</span>
+                    </a>
+                    <a href="/api/db/stats" class="btn btn-outline">
+                        <i class="fas fa-database"></i>
+                        <span>Database Stats</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="footer-text">
+                    <strong>Environmental Monitor Pro</strong><br>
+                    IoT Dashboard • Version 4.0 • 5 Sensors • Built with ❤️
+                </div>
+            </div>
+            
+            <div class="footer-stats">
+                <div class="footer-stat">
+                    <div class="footer-stat-value" id="footerReadings">0</div>
+                    <div class="footer-stat-label">Readings</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="footer-stat-value" id="footerUptime">0s</div>
+                    <div class="footer-stat-label">Uptime</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="footer-stat-value" id="footerStatus">--</div>
+                    <div class="footer-stat-label">Status</div>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <a href="/api/data" class="footer-link" target="_blank">
+                    <i class="fas fa-code"></i> API
+                </a>
+                <a href="https://github.com" class="footer-link" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+                <a href="#" class="footer-link" onclick="alert('Dashboard v4.0\n5-Sensor IoT System\nTemp • Humidity • Dust • Pressure • Solar')">
+                    <i class="fas fa-info-circle"></i> About
+                </a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        let lastUpdateTime = Date.now();
+        let startTime = Date.now();
+        let readingsCount = 0;
+        
+        // Update dashboard data
+        async function updateData() {
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                
+                lastUpdateTime = Date.now();
+                
+                // Update connection status
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                
+                if (data.connected) {
+                    statusDot.classList.remove('disconnected');
+                    statusText.textContent = 'Connected';
+                    readingsCount++;
+                } else {
+                    statusDot.classList.add('disconnected');
+                    statusText.textContent = 'Disconnected';
+                }
+                
+                document.getElementById('lastUpdate').textContent = data.time || 'Live';
+                
+                // Update Temperature
+                if (data.temperature !== undefined) {
+                    const temp = data.temperature;
+                    document.getElementById('tempValue').innerHTML = `${temp.toFixed(1)}<span class="card-unit">°C</span>`;
+                    const tempPercent = Math.min((temp / 50) * 100, 100);
+                    document.getElementById('tempBar').style.width = `${tempPercent}%`;
+                    
+                    const tempStatus = document.getElementById('tempStatus');
+                    if (temp > 35) {
+                        tempStatus.textContent = '🔥 High Temperature';
+                        tempStatus.style.background = 'rgba(239, 68, 68, 0.2)';
+                        tempStatus.style.color = '#ef4444';
+                    } else if (temp > 25) {
+                        tempStatus.textContent = '☀️ Warm';
+                        tempStatus.style.background = 'rgba(245, 158, 11, 0.2)';
+                        tempStatus.style.color = '#f59e0b';
+                    } else {
+                        tempStatus.textContent = '✓ Normal';
+                        tempStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+                        tempStatus.style.color = '#10b981';
+                    }
+                }
+                
+                // Update Humidity
+                if (data.humidity !== undefined) {
+                    const hum = data.humidity;
+                    document.getElementById('humValue').innerHTML = `${hum.toFixed(0)}<span class="card-unit">%</span>`;
+                    document.getElementById('humBar').style.width = `${hum}%`;
+                    
+                    const humStatus = document.getElementById('humStatus');
+                    if (hum > 70) {
+                        humStatus.textContent = '💧 High Humidity';
+                        humStatus.style.background = 'rgba(59, 130, 246, 0.2)';
+                        humStatus.style.color = '#3b82f6';
+                    } else if (hum < 30) {
+                        humStatus.textContent = '🏜️ Low Humidity';
+                        humStatus.style.background = 'rgba(245, 158, 11, 0.2)';
+                        humStatus.style.color = '#f59e0b';
+                    } else {
+                        humStatus.textContent = '✓ Optimal';
+                        humStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+                        humStatus.style.color = '#10b981';
+                    }
+                }
+                
+                // Update Dust/Air Quality
+                if (data.dust !== undefined) {
+                    const dust = data.dust;
+                    document.getElementById('dustValue').innerHTML = `${dust.toFixed(1)}<span class="card-unit">µg/m³</span>`;
+                    const dustPercent = Math.min((dust / 300) * 100, 100);
+                    document.getElementById('dustBar').style.width = `${dustPercent}%`;
+                    
+                    const dustStatus = document.getElementById('dustStatus');
+                    const aqiDisplay = document.getElementById('aqiDisplay');
+                    
+                    if (dust < 140) {
+                        dustStatus.textContent = '✓ Good Air';
+                        dustStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+                        dustStatus.style.color = '#10b981';
+                        
+                        aqiDisplay.innerHTML = `
+                            <div class="aqi-circle" style="border: 4px solid #10b981;">
+                                <div class="aqi-value" style="color: #10b981;">${dust.toFixed(0)}</div>
+                                <div class="aqi-label">AQI</div>
+                            </div>
+                            <div class="aqi-info">
+                                <h3 style="color: #10b981;"><i class="fas fa-check-circle"></i> Good Air Quality</h3>
+                                <p class="aqi-description">Air quality is satisfactory and poses little or no health risk. Perfect for outdoor activities.</p>
+                            </div>
+                        `;
+                    } else if (dust < 180) {
+                        dustStatus.textContent = '⚠️ Moderate';
+                        dustStatus.style.background = 'rgba(245, 158, 11, 0.2)';
+                        dustStatus.style.color = '#f59e0b';
+                        
+                        aqiDisplay.innerHTML = `
+                            <div class="aqi-circle" style="border: 4px solid #f59e0b;">
+                                <div class="aqi-value" style="color: #f59e0b;">${dust.toFixed(0)}</div>
+                                <div class="aqi-label">AQI</div>
+                            </div>
+                            <div class="aqi-info">
+                                <h3 style="color: #f59e0b;"><i class="fas fa-exclamation-triangle"></i> Moderate Air Quality</h3>
+                                <p class="aqi-description">Acceptable for most people. Sensitive individuals should consider limiting prolonged outdoor activities.</p>
+                            </div>
+                        `;
+                    } else {
+                        dustStatus.textContent = '⚠ Poor Air';
+                        dustStatus.style.background = 'rgba(239, 68, 68, 0.2)';
+                        dustStatus.style.color = '#ef4444';
+                        
+                        aqiDisplay.innerHTML = `
+                            <div class="aqi-circle" style="border: 4px solid #ef4444;">
+                                <div class="aqi-value" style="color: #ef4444;">${dust.toFixed(0)}</div>
+                                <div class="aqi-label">AQI</div>
+                            </div>
+                            <div class="aqi-info">
+                                <h3 style="color: #ef4444;"><i class="fas fa-exclamation-circle"></i> Poor Air Quality</h3>
+                                <p class="aqi-description">Everyone may experience health effects. Sensitive groups should avoid prolonged outdoor exposure.</p>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // Update Air Pressure - NEW!
+                if (data.pressure !== undefined) {
+                    const pressure = data.pressure;
+                    document.getElementById('pressureValue').innerHTML = `${pressure.toFixed(2)}<span class="card-unit">kPa</span>`;
+                    
+                    // CHANGE THIS LINE:
+                    // OLD: const pressurePercent = Math.min((pressure / 110) * 100, 100);
+                    // NEW:
+                    const pressurePercent = Math.min((pressure / 40) * 100, 100);
+                    
+                    document.getElementById('pressureBar').style.width = `${pressurePercent}%`;
+                    
+                    const pressureStatus = document.getElementById('pressureStatus');
+                    
+                    // ALSO UPDATE THESE RANGES FOR 0-40 kPa:
+                    // Normal atmospheric pressure at sea level ≈ 101 kPa
+                    // But this sensor measures 0-40 kPa differential pressure
+                    
+                    if (pressure < 10) {
+                        pressureStatus.textContent = '⬇️ Very Low';
+                        pressureStatus.style.background = 'rgba(59, 130, 246, 0.2)';
+                        pressureStatus.style.color = '#3b82f6';
+                    } else if (pressure > 30) {
+                        pressureStatus.textContent = '⬆️ Very High';
+                        pressureStatus.style.background = 'rgba(239, 68, 68, 0.2)';
+                        pressureStatus.style.color = '#ef4444';
+                    } else {
+                        pressureStatus.textContent = '✓ Normal Range';
+                        pressureStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+                        pressureStatus.style.color = '#10b981';
+                    }
+                }
+                
+                // Update Solar Tracker
+                if (data.tracker) {
+                    const angle = data.tracker.angle || 90;
+                    document.getElementById('angleValue').innerHTML = `${angle}<span class="card-unit">°</span>`;
+                    
+                    const anglePercent = ((angle - 30) / 120) * 100;
+                    document.getElementById('angleBar').style.width = `${Math.max(0, Math.min(100, anglePercent))}%`;
+                    
+                    const trackerStatus = document.getElementById('trackerStatus');
+                    const status = data.tracker.status || 'UNKNOWN';
+                    
+                    if (status === 'CENTERED') {
+                        trackerStatus.textContent = '✓ Centered';
+                        trackerStatus.style.background = 'rgba(16, 185, 129, 0.2)';
+                        trackerStatus.style.color = '#10b981';
+                    } else if (status === 'TRACKING') {
+                        trackerStatus.textContent = '🎯 Tracking';
+                        trackerStatus.style.background = 'rgba(245, 158, 11, 0.2)';
+                        trackerStatus.style.color = '#f59e0b';
+                    } else {
+                        trackerStatus.textContent = status;
+                        trackerStatus.style.background = 'rgba(59, 130, 246, 0.2)';
+                        trackerStatus.style.color = '#3b82f6';
+                    }
+                    
+                    const ldrLeft = data.tracker.ldr_left || 0;
+                    const ldrRight = data.tracker.ldr_right || 0;
+                    
+                    document.getElementById('ldrLeft').textContent = ldrLeft;
+                    document.getElementById('ldrRight').textContent = ldrRight;
+                    
+                    document.getElementById('ldrLeftBar').style.width = `${(ldrLeft / 1023) * 100}%`;
+                    document.getElementById('ldrRightBar').style.width = `${(ldrRight / 1023) * 100}%`;
+                    
+                    const diff = data.tracker.diff || 0;
+                    document.getElementById('lightDiff').textContent = diff;
+                    document.getElementById('trackerAction').textContent = data.tracker.action || 'CENTER';
+                    document.getElementById('trackerSystemStatus').textContent = status;
+                    
+                    let efficiency = 100;
+                    if (status === 'TRACKING') {
+                        efficiency = Math.max(0, 100 - Math.abs(diff) / 10);
+                    } else if (status === 'CENTERED') {
+                        efficiency = 100;
+                    }
+                    document.getElementById('trackerEfficiency').textContent = `${efficiency.toFixed(0)}%`;
+                    
+                    updateSolarVisualization(angle, ldrLeft, ldrRight);
+                }
+                
+                // Update footer stats
+                updateFooterStats();
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        
+        // Update 3D solar visualization
+        function updateSolarVisualization(angle, ldrLeft, ldrRight) {
+            const panel = document.getElementById('panelSurface');
+            const sun = document.getElementById('sunPosition');
+            
+            const rotationY = (angle - 90) * 0.8;
+            panel.style.transform = `rotateY(${rotationY}deg)`;
+            
+            const avgLight = (ldrLeft + ldrRight) / 2;
+            const lightDiff = ldrLeft - ldrRight;
+            
+            const sunX = 50 + (lightDiff / 1023) * 30;
+            const sunY = 20 + (avgLight / 1023) * 30;
+            
+            sun.style.left = `${sunX}%`;
+            sun.style.top = `${sunY}%`;
+            
+            const intensity = avgLight / 1023;
+            sun.style.opacity = 0.5 + (intensity * 0.5);
+        }
+        
+        // Fetch weather data
+        async function updateWeather() {
+            try {
+                const response = await fetch('/api/weather');
+                const weather = await response.json();
+                
+                document.getElementById('weatherTemp').textContent = `${Math.round(weather.temp)}°C`;
+                document.getElementById('weatherDesc').textContent = weather.description;
+                document.getElementById('weatherWind').textContent = `${weather.wind_speed} km/h`;
+                document.getElementById('weatherHumidity').textContent = `${weather.humidity}%`;
+                document.getElementById('weatherPressure').textContent = `${weather.pressure} hPa`;
+                document.getElementById('weatherVisibility').textContent = `${weather.visibility} km`;
+                
+                const iconCode = weather.icon || '01d';
+                const weatherIcon = document.getElementById('weatherIcon');
+                const iconMap = {
+                    '01d': 'fa-sun', '01n': 'fa-moon',
+                    '02d': 'fa-cloud-sun', '02n': 'fa-cloud-moon',
+                    '03d': 'fa-cloud', '03n': 'fa-cloud',
+                    '04d': 'fa-cloud', '04n': 'fa-cloud',
+                    '09d': 'fa-cloud-showers-heavy', '09n': 'fa-cloud-showers-heavy',
+                    '10d': 'fa-cloud-sun-rain', '10n': 'fa-cloud-moon-rain',
+                    '11d': 'fa-bolt', '11n': 'fa-bolt',
+                    '13d': 'fa-snowflake', '13n': 'fa-snowflake',
+                    '50d': 'fa-smog', '50n': 'fa-smog'
+                };
+                weatherIcon.innerHTML = `<i class="fas ${iconMap[iconCode] || 'fa-cloud'}"></i>`;
+                
+            } catch (error) {
+                console.error('Weather fetch error:', error);
+            }
+        }
+        
+        // Update footer statistics
+        function updateFooterStats() {
+            document.getElementById('footerReadings').textContent = readingsCount;
+            
+            const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
+            const hours = Math.floor(uptimeSeconds / 3600);
+            const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+            const seconds = uptimeSeconds % 60;
+            
+            if (hours > 0) {
+                document.getElementById('footerUptime').textContent = `${hours}h ${minutes}m`;
+            } else if (minutes > 0) {
+                document.getElementById('footerUptime').textContent = `${minutes}m ${seconds}s`;
+            } else {
+                document.getElementById('footerUptime').textContent = `${seconds}s`;
+            }
+            
+            const statusDot = document.getElementById('statusDot');
+            document.getElementById('footerStatus').textContent = statusDot.classList.contains('disconnected') ? 'Offline' : 'Online';
+        }
+        
+        // Initialize
+        updateData();
+        updateWeather();
+        
+        // Update every 2 seconds
+        setInterval(updateData, 2000);
+        
+        // Update weather every 10 minutes
+        setInterval(updateWeather, 600000);
+        
+        // Auto-refresh if disconnected
+        setInterval(() => {
+            if (Date.now() - lastUpdateTime > 10000) {
+                console.log('Connection timeout, refreshing...');
+                updateData();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

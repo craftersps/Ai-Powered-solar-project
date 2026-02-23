@@ -1,0 +1,11 @@
+# IoT Environmental Monitor — Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Web framework
+flask>=2.3.0
+
+# Arduino serial communication
+pyserial>=3.5
+
+# HTTP requests (for Open-Meteo weather API)
+requests>=2.31.0

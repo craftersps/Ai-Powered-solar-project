@@ -1,0 +1,56 @@
+# ── Database ────────────────────────────────────────────
+# Contains your personal sensor data — never commit this
+data/*.db
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Environment variables (API keys, secrets)
+.env
+.env.local
+.env.*.local
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# ── OS Files ─────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── IDE / Editor ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Arduino ──────────────────────────────────────────────
+# Arduino IDE build artifacts
+arduino/*/build/
+
+# ── Logs ─────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Misc ─────────────────────────────────────────────────
+*.bak
+*.tmp
