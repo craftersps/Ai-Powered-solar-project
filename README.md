@@ -1,4 +1,4 @@
-# 🌍 Environmental Monitor Pro
+# 🌍 Environmental Monitor Pro — 5-Sensor IoT Dashboard with AI Analyst
 
 > A full-stack IoT environmental monitoring system — from bare Arduino sensors to a real-time AI-powered web dashboard. Built entirely from scratch without any IoT frameworks or cloud platforms.
 
